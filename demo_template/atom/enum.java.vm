@@ -1,0 +1,29 @@
+package ${packageName};
+
+import io.github.atom.kernel.common.enums.SerializeEnum;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+/**
+ * <p> ${comment}枚举 </p>
+ *
+ * @author ${author}
+ * @version ${version}
+ * @email "mailto:${author}@${email}"
+ * @date ${date}
+ * @since ${version}
+ */
+@Getter
+@AllArgsConstructor
+public enum ${enumName} implements SerializeEnum<${valueType}> {
+#foreach($item in $values)
+    /** ${item.desc} */
+    ${item.code.toUpperCase()}(${item.code}, "${item.desc}")#if($foreach.hasNext),#else;#end
+
+#end
+
+    /** Value */
+    private final ${valueType} value;
+    /** Desc */
+    private final String desc;
+}

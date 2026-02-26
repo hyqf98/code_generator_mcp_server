@@ -1,0 +1,48 @@
+package ${packageName};
+
+import io.github.atom.kernel.common.base.BaseExtendPO;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.Accessors;
+
+import java.io.Serial;
+#foreach($import in $imports)
+import ${import};
+#end
+
+/**
+ * <p> ${comment}映射实体 </p>
+ *
+ * @author ${author}
+ * @version ${version}
+ * @email "mailto:${author}@${email}"
+ * @date ${date}
+ * @since ${version}
+ */
+@Data
+@NoArgsConstructor
+@Accessors(chain = true)
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class ${className} extends BaseExtendPO<Long, ${className}> {
+
+    /** serialVersionUID */
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+#foreach($field in $fields)
+#if(!$field.rules.ignore && !$field.rules.isPrimaryKey)
+#if("$!field.comment" != "")
+    /** ${field.comment} */
+#end
+#if($field.rules.atomEnum)
+    private ${field.rules.atomEnum.name} ${field.fieldName};
+#else
+    private ${field.fieldType} ${field.fieldName};
+#end
+
+#end
+#end
+}

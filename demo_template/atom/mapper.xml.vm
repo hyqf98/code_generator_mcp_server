@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${namespace}">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="${className}ResultMap" type="${entityPackage}.${className}">
+#foreach($field in $fields)
+#if(!$field.rules.ignore)
+#if($field.rules.isPrimaryKey)
+        <id column="${field.columnName}" property="${field.fieldName}"/>
+#else
+        <result column="${field.columnName}" property="${field.fieldName}"/>
+#end
+#end
+#end
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="all_field">
+#set($fieldCount = 0)
+#foreach($field in $fields)
+#if(!$field.rules.ignore)
+#set($fieldCount = $fieldCount + 1)
+#end
+#end
+#set($index = 0)
+#foreach($field in $fields)
+#if(!$field.rules.ignore)
+#set($index = $index + 1)
+            a.`${field.columnName}`#if($index < $fieldCount), #end
+
+#end
+#end
+    </sql>
+
+    <sql id="date_query">
+        <if test="query.startTime != null">
+            <![CDATA[
+                and a.create_time >= #{query.startTime}
+            ]]>
+        </if>
+        <if test="query.endTime != null">
+            <![CDATA[
+                and a.create_time < #{query.endTime}
+            ]]>
+        </if>
+    </sql>
+
+#if($queryFields && $queryFields.size() > 0)
+    <sql id="common_query">
+#foreach($field in $queryFields)
+#if(!$field.rules.ignore)
+        <if test="query.${field.fieldName} != null#if($field.stringType) and query.${field.fieldName} != ''#end">
+            and a.${field.columnName} = #{query.${field.fieldName}}
+        </if>
+#end
+#end
+    </sql>
+
+#end
+    <select id="page" resultType="${dtoPackage}.${className}DTO"
+            parameterType="${queryPackage}.${className}Query">
+        select
+        <include refid="all_field"/>
+        from ${tableName} as a
+        <where>
+            and a.deleted = 0
+            <include refid="date_query"/>
+#if($queryFields && $queryFields.size() > 0)
+            <include refid="common_query"/>
+#end
+        </where>
+        order by a.create_time desc
+    </select>
+</mapper>

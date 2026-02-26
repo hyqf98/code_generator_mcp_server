@@ -26,7 +26,9 @@ import {
   generateCodeTool,
   GenerateCodeInputSchema,
   parseRulesTool,
-  ParseRulesInputSchema
+  ParseRulesInputSchema,
+  generateModuleTool,
+  GenerateModuleInputSchema
 } from './tools/index.js';
 import { validateConfig } from './utils/config.js';
 
@@ -245,6 +247,82 @@ server.registerTool(
     return {
       content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
       structuredContent: result
+    };
+  }
+);
+
+// 注册 generate_module 工具
+server.registerTool(
+  'code_generator_generate_module',
+  {
+    title: '批量生成模块代码',
+    description: `根据简化的参数批量生成完整模块代码（PO、DTO、Form、Query、Mapper、Service、Controller、Converter、枚举等）。
+
+参数：
+- group: 模板分组名称（必填），如 "atom"
+- basePackage: 基础包名（必填），如 "io.github.atom.ai.sales.module.project"
+- moduleName: 模块名（必填），小写，用于生成目录，如 "project"
+- className: 类名（必填），大驼峰，如 "AiProject"
+- tableName: 数据库表名（必填），如 "ai_project"
+- comment: 模块注释/描述（可选）
+- outputDir: 输出基础目录（必填），如 "/path/to/project/src/main/java"
+- resourcesDir: 资源目录（可选），用于XML等，如 "/path/to/project/src/main/resources"
+- fields: 字段列表（必填），简化结构：
+  - name: 字段名（数据库列名或Java字段名）
+  - type: 字段类型（可选，自动推断）
+  - comment: 字段注释（可选，支持规则标记）
+  - isPrimary: 是否主键（可选）
+- author: 作者（可选）
+- date: 日期（可选）
+- version: 版本号（可选）
+- email: 邮箱后缀（可选）
+- templates: 要生成的模板列表（可选，不传则生成全部）
+
+字段注释支持的特殊标记：
+- Q@: 标记为查询字段
+- 自定义枚举:类型:名称:值列表;: 定义枚举
+- @dict(编码): 字典引用
+- @ignore: 忽略字段
+
+示例输入：
+{
+  "group": "atom",
+  "basePackage": "io.github.atom.ai.sales.module.project",
+  "moduleName": "project",
+  "className": "AiProject",
+  "tableName": "ai_project",
+  "comment": "AI项目",
+  "outputDir": "/path/to/project/src/main/java",
+  "fields": [
+    { "name": "id", "type": "bigint", "isPrimary": true },
+    { "name": "project_name", "type": "varchar", "comment": "Q@项目名称" },
+    { "name": "project_type", "type": "tinyint", "comment": "Q@自定义枚举:Integer:项目类型:1(1, \"硬件销售\"),2(2, \"综合项目\");" }
+  ],
+  "author": "haijun"
+}
+
+返回：
+{
+  "success": true/false,
+  "results": [
+    { "template": "entity", "outputPath": "...", "success": true, "message": "生成成功" }
+  ],
+  "message": "生成完成: 成功 X 个，失败 Y 个"
+}`,
+    inputSchema: GenerateModuleInputSchema,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false
+    }
+  },
+  async (params) => {
+    const result = await generateModuleTool(params);
+    return {
+      content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+      structuredContent: result,
+      isError: !result.success
     };
   }
 );

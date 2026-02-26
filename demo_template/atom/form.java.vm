@@ -1,0 +1,65 @@
+package ${packageName};
+
+import io.github.atom.kernel.common.base.BaseForm;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
+
+import java.io.Serial;
+#foreach($import in $imports)
+import ${import};
+#end
+
+/**
+ * <p> ${comment}入参实体 (根据业务需求添加字段) </p>
+ *
+ * @author ${author}
+ * @version ${version}
+ * @email "mailto:${author}@${email}"
+ * @date ${date}
+ * @since ${version}
+ */
+@Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@Accessors(chain = true)
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+@Schema(name = "${comment}-新增与更新")
+public class ${className}Form extends BaseForm<Long> {
+    /** serialVersionUID */
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+#foreach($field in $fields)
+#if(!$field.rules.ignore && !$field.rules.isPrimaryKey)
+#if("$!field.comment" != "")
+    /** ${field.comment} */
+    @Schema(description = "${field.comment}")
+#else
+    @Schema(description = "${field.fieldName}")
+#end
+#if($field.required)
+#if($field.stringType)
+    @NotBlank(message = "[${field.comment}] 必填")
+#else
+    @NotNull(message = "[${field.comment}] 必填")
+#end
+#end
+#if($field.rules.atomEnum)
+    private ${field.rules.atomEnum.name} ${field.fieldName};
+#else
+    private ${field.fieldType} ${field.fieldName};
+#end
+
+#end
+#end
+}

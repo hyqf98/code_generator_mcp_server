@@ -1,0 +1,133 @@
+package ${packageName};
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.github.xingfudeshi.knife4j.annotations.ApiOperationSupport;
+import io.github.atom.extend.rest.ServletController;
+import io.github.atom.extend.rest.annotation.RestControllerWrapper;
+import io.github.atom.kernel.core.api.BaseCodes;
+import io.github.atom.kernel.core.util.CollectionUtils;
+import io.github.atom.kernel.common.base.group.UpdateGroup;
+import jakarta.validation.groups.Default;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.AllArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import ${dtoPackage}.${className}DTO;
+import ${formPackage}.${className}Form;
+import ${queryPackage}.${className}Query;
+import ${servicePackage}.${className}Service;
+import ${converterPackage}.${className}Converter;
+
+import java.util.List;
+
+/**
+ * <p> ${comment}控制器 </p>
+ *
+ * @author ${author}
+ * @version ${version}
+ * @email "mailto:${author}@${email}"
+ * @date ${date}
+ * @since ${version}
+ */
+@Tag(name = "${comment}接口")
+@AllArgsConstructor
+@RestControllerWrapper("/${requestMapping}")
+public class ${className}Controller extends ServletController {
+
+    /** ${className} service */
+    private final ${className}Service ${classNameLower}Service;
+
+    /**
+     * 根据条件查询全部数据
+     *
+     * @param query 查询参数
+     * @return 对象集合
+     * @since ${version}
+     */
+    @GetMapping("/list")
+    @Operation(summary = "列表查询")
+    @ApiOperationSupport(order = 1)
+    public List<${className}DTO> list(@ParameterObject ${className}Query query) {
+        return this.${classNameLower}Service.list(query);
+    }
+
+    /**
+     * 分页查询
+     *
+     * @param query 查询参数
+     * @return 分页数据
+     * @since ${version}
+     */
+    @GetMapping("/page")
+    @Operation(summary = "分页查询")
+    @ApiOperationSupport(order = 2)
+    public IPage<${className}DTO> pages(@ParameterObject ${className}Query query) {
+        return this.${classNameLower}Service.page(query);
+    }
+
+    /**
+     * 新增数据
+     *
+     * @param form 参数实体
+     * @since ${version}
+     */
+    @PostMapping
+    @Operation(summary = "新增数据")
+    @ApiOperationSupport(order = 3)
+    public void create(@Validated @RequestBody ${className}Form form) {
+        this.${classNameLower}Service.create(form);
+    }
+
+    /**
+     * 通过主键查询单条数据
+     *
+     * @param id 主键
+     * @return dto 单条数据
+     * @since ${version}
+     */
+    @GetMapping("/{id}")
+    @Operation(summary = "详情")
+    @ApiOperationSupport(order = 4)
+    public ${className}DTO detail(@PathVariable("id") Long id) {
+        return this.${classNameLower}Service.detail(id);
+    }
+
+    /**
+     * 修改数据
+     *
+     * @param id 主键
+     * @param form 参数实体
+     * @since ${version}
+     */
+    @PutMapping("/{id}")
+    @Operation(summary = "修改数据")
+    @ApiOperationSupport(order = 5)
+    public void update(@PathVariable("id") Long id, @Validated({UpdateGroup.class, Default.class}) @RequestBody ${className}Form form) {
+        BaseCodes.PARAM_VERIFY_ERROR.isTrue(id.equals(form.getId()), "id 不一致");
+        this.${classNameLower}Service.update(form);
+    }
+
+    /**
+     * 删除数据
+     *
+     * @param ids 主键集合
+     * @since ${version}
+     */
+    @DeleteMapping
+    @Operation(summary = "删除数据")
+    @ApiOperationSupport(order = 6)
+    public void remove(@RequestBody List<Long> ids) {
+        BaseCodes.DATA_ERROR.notEmpty(ids, "待删除的数据标识不能为空");
+        this.${classNameLower}Service.removeBatchByIds(ids);
+    }
+
+}

@@ -1,0 +1,170 @@
+{
+  "name": "atom",
+  "description": "Atom 框架代码生成模板集，支持生成 Entity、DTO、Form、Query、Mapper、Service、Controller、Converter 等完整代码",
+  "version": "1.0.0",
+  "author": "haijun",
+  "fieldParsingGuide": {
+    "description": "以下是SQL字段注释的解析规则。AI需要根据这些规则从SQL注释中提取字段属性，并生成对应的字段参数。",
+    "typeMapping": {
+      "bigint": "Long",
+      "bigint unsigned": "Long",
+      "varchar": "String",
+      "char": "String",
+      "text": "String",
+      "longtext": "String",
+      "tinyint": "Integer",
+      "int": "Integer",
+      "decimal": "BigDecimal",
+      "double": "Double",
+      "float": "Float",
+      "date": "LocalDate",
+      "datetime": "LocalDateTime",
+      "timestamp": "LocalDateTime",
+      "boolean": "Boolean",
+      "bit": "Boolean"
+    },
+    "namingConvention": {
+      "columnNameToFieldName": "将下划线命名转换为驼峰命名，如 project_name -> projectName",
+      "commentCleanup": "清理注释中的特殊标记（Q@、自定义枚举:、@dict、@ignore等），保留纯文本注释"
+    },
+    "rules": [
+      {
+        "name": "Q@",
+        "description": "查询字段标记。注释以Q@开头表示该字段需要出现在Query查询类中",
+        "inputExample": "Q@项目名称",
+        "outputField": {
+          "comment": "项目名称",
+          "isQueryField": true
+        }
+      },
+      {
+        "name": "自定义枚举",
+        "pattern": "自定义枚举:(Integer|String|Long):([^:]+):(.+);",
+        "description": "Atom框架枚举定义。定义枚举类型，字段类型将使用枚举类名",
+        "inputExample": "Q@自定义枚举:Integer:项目类型:1(1, \"硬件销售\"),2(2, \"综合项目\");",
+        "outputField": {
+          "comment": "项目类型",
+          "isQueryField": true,
+          "fieldType": "ProjectType",
+          "atomEnum": {
+            "name": "ProjectType",
+            "valueType": "Integer",
+            "values": [
+              { "code": "1", "desc": "硬件销售" },
+              { "code": "2", "desc": "综合项目" }
+            ]
+          }
+        },
+        "notes": [
+          "枚举名需要从中文转换为英文类名，如'项目类型' -> 'ProjectType'",
+          "枚举值格式：code(code, \"desc\")",
+          "字段类型使用枚举名而不是基础类型"
+        ]
+      },
+      {
+        "name": "@dict",
+        "pattern": "@dict(字典编码)",
+        "description": "字典引用标记。关联系统字典，DTO中会生成字典翻译字段",
+        "inputExample": "状态 @dict(USER_STATUS)",
+        "outputField": {
+          "comment": "状态",
+          "dict": {
+            "code": "USER_STATUS"
+          }
+        }
+      },
+      {
+        "name": "@ignore",
+        "description": "忽略标记。该字段不参与代码生成",
+        "inputExample": "内部字段 @ignore",
+        "outputField": {
+          "comment": "内部字段",
+          "ignore": true
+        }
+      },
+      {
+        "name": "主键识别",
+        "description": "根据字段名或SQL定义识别主键",
+        "conditions": [
+          "字段名为 'id'",
+          "SQL中有 PRIMARY KEY 标记",
+          "SQL中有 auto_increment"
+        ],
+        "outputField": {
+          "isPrimaryKey": true
+        }
+      }
+    ],
+    "fieldStructure": {
+      "description": "解析后的字段参数结构",
+      "properties": {
+        "columnName": "数据库列名（下划线命名）",
+        "fieldName": "Java字段名（驼峰命名）",
+        "fieldType": "Java类型（基础类型或枚举类名）",
+        "comment": "清理后的字段注释",
+        "isPrimaryKey": "是否主键（可选，默认false）",
+        "isQueryField": "是否查询字段（可选，默认false）",
+        "ignore": "是否忽略（可选，默认false）",
+        "atomEnum": "Atom枚举定义（可选）",
+        "dict": "字典引用（可选）"
+      }
+    }
+  },
+  "templates": [
+    {
+      "name": "entity",
+      "file": "entity.java.vm",
+      "description": "生成 Atom 框架实体类（PO），继承 BaseExtendPO"
+    },
+    {
+      "name": "dto",
+      "file": "dto.java.vm",
+      "description": "生成 Atom 框架数据传输对象（DTO），继承 BaseDTO"
+    },
+    {
+      "name": "form",
+      "file": "form.java.vm",
+      "description": "生成 Atom 框架表单对象（Form），继承 BaseForm"
+    },
+    {
+      "name": "query",
+      "file": "query.java.vm",
+      "description": "生成 Atom 框架查询对象（Query），继承 BaseQuery，仅包含标记为查询字段的属性"
+    },
+    {
+      "name": "mapper",
+      "file": "mapper.java.vm",
+      "description": "生成 Atom 框架 Mapper 接口，继承 BaseMapper"
+    },
+    {
+      "name": "mapper-xml",
+      "file": "mapper.xml.vm",
+      "description": "生成 Mapper XML 文件，包含分页查询SQL"
+    },
+    {
+      "name": "service",
+      "file": "service.java.vm",
+      "description": "生成 Atom 框架 Service 接口"
+    },
+    {
+      "name": "service-impl",
+      "file": "serviceImpl.java.vm",
+      "description": "生成 Atom 框架 Service 实现类"
+    },
+    {
+      "name": "controller",
+      "file": "controller.java.vm",
+      "description": "生成 Atom 框架 RESTful Controller"
+    },
+    {
+      "name": "converter",
+      "file": "converter.java.vm",
+      "description": "生成 MapStruct 对象转换器接口"
+    },
+    {
+      "name": "enum",
+      "file": "enum.java.vm",
+      "description": "生成 Atom 框架枚举类，实现 SerializeEnum 接口"
+    }
+  ]
+}

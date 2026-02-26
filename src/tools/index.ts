@@ -7,3 +7,4 @@ export { listTemplatesTool, ListTemplatesInputSchema, type ListTemplatesInput, t
 export { getTemplateConfigTool, GetTemplateConfigInputSchema, type GetTemplateConfigInput, type GetTemplateConfigOutput } from './getTemplateConfig.js';
 export { generateCodeTool, GenerateCodeInputSchema, type GenerateCodeInput } from './generateCode.js';
 export { parseRulesTool, ParseRulesInputSchema, type ParseRulesInput, type ParseRulesOutput } from './parseRules.js';
+export { generateModuleTool, GenerateModuleInputSchema, type GenerateModuleInput, type GenerateModuleOutput } from './generateModule.js';

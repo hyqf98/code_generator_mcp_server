@@ -1,0 +1,104 @@
+package ${packageName};
+
+import ${entityPackage}.${className};
+import ${dtoPackage}.${className}DTO;
+import ${formPackage}.${className}Form;
+import ${queryPackage}.${className}Query;
+import ${mapperPackage}.${className}Mapper;
+import ${servicePackage}.${className}Service;
+import ${converterPackage}.${className}Converter;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.github.atom.extend.mybatis.service.impl.BaseServiceImpl;
+import io.github.atom.kernel.core.api.BaseCodes;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+/**
+ * <p> ${comment}服务接口实现类 </p>
+ *
+ * @author ${author}
+ * @version ${version}
+ * @email "mailto:${author}@${email}"
+ * @date ${date}
+ * @since ${version}
+ */
+@Slf4j
+@Service
+@AllArgsConstructor
+public class ${className}ServiceImpl extends BaseServiceImpl<${className}Mapper, ${className}> implements ${className}Service {
+
+    /**
+     * 根据条件查询全部数据
+     *
+     * @param query 查询参数
+     * @return 对象集合
+     * @since ${version}
+     */
+    @Override
+    public List<${className}DTO> list(${className}Query query) {
+        return this.baseMapper.list(query);
+    }
+
+    /**
+     * 根据 ID 获取详细信息
+     *
+     * @param id 主键
+     * @return 实体对象
+     * @since ${version}
+     */
+    @Override
+    public ${className}DTO detail(Long id) {
+        final ${className} po = this.baseMapper.selectById(id);
+        BaseCodes.DATA_ERROR.notNull(po);
+        return ${className}Converter.INSTANCE.p2d(po);
+    }
+
+    /**
+     * 分页查询
+     *
+     * @param query 查询参数
+     * @return 分页数据
+     * @since ${version}
+     */
+    @Override
+    public IPage<${className}DTO> page(${className}Query query) {
+        return this.baseMapper.page(query);
+    }
+
+    /**
+     * 新增数据
+     *
+     * @param form 参数实体
+     * @since ${version}
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void create(${className}Form form) {
+        final ${className} po = ${className}Converter.INSTANCE.f2p(form);
+        final int savedCount = this.baseMapper.insertIgnore(po);
+        BaseCodes.OPTION_FAILURE.isTrue(savedCount == 1);
+    }
+
+    /**
+     * 更新数据
+     *
+     * @param form 参数实体
+     * @since ${version}
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void update(${className}Form form) {
+        // 数据校验
+        BaseCodes.DATA_ERROR.notNull(form.getId(), "ID 不能为空");
+        final ${className} existing = this.baseMapper.selectById(form.getId());
+        BaseCodes.DATA_ERROR.notNull(existing, "指定的数据不存在: " + form.getId());
+
+        final int updatedCount = this.baseMapper.updateById(${className}Converter.INSTANCE.f2p(form));
+        BaseCodes.OPTION_FAILURE.isTrue(updatedCount == 1);
+    }
+
+}

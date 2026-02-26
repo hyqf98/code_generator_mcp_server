@@ -1,0 +1,61 @@
+package ${packageName};
+
+import io.github.atom.kernel.common.base.BaseDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
+
+import java.io.Serial;
+#foreach($import in $imports)
+import ${import};
+#end
+
+/**
+ * <p> ${comment}数据传输实体 (根据业务需求添加字段) </p>
+ *
+ * @author ${author}
+ * @version ${version}
+ * @email "mailto:${author}@${email}"
+ * @date ${date}
+ * @since ${version}
+ */
+@Data
+@SuperBuilder
+@NoArgsConstructor
+@Accessors(chain = true)
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+@Schema(name = "${comment}-数据传输对象")
+public class ${className}DTO extends BaseDTO<Long> {
+    /** serialVersionUID */
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+#foreach($field in $fields)
+#if(!$field.rules.ignore && !$field.rules.isPrimaryKey)
+#if("$!field.comment" != "")
+    /** ${field.comment} */
+    @Schema(description = "${field.comment}")
+#else
+    @Schema(description = "${field.fieldName}")
+#end
+#if($field.rules.atomEnum)
+    private ${field.rules.atomEnum.name} ${field.fieldName};
+#else
+#if($field.rules.dict)
+    @FieldBind(target = "${field.fieldName}Dict")
+#end
+    private ${field.fieldType} ${field.fieldName};
+#end
+#if($field.rules.dict)
+    /** ${field.comment}字典翻译 */
+    private Object ${field.fieldName}Dict;
+#end
+
+#end
+#end
+}

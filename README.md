@@ -68,13 +68,132 @@ npm run dev
 |---------|------|
 | `code_generator_list_groups` | 列出所有模板分组 |
 | `code_generator_list_templates` | 列出指定分组的模板 |
-| `code_generator_get_template_config` | 获取模板详细配置 |
-| `code_generator_generate_code` | 生成代码 |
+| `code_generator_get_template_config` | 获取模板配置（包含字段解析规则） |
+| `code_generator_generate_code` | 生成单个模板代码 |
+| `code_generator_generate_module` | 批量生成完整模块代码（推荐） |
 | `code_generator_parse_rules` | 解析自定义规则 |
+
+## 工作流程
+
+```
+1. AI读取数据库表结构（通过数据库MCP）
+          ↓
+2. AI读取模板配置的 fieldParsingGuide（解析规则说明）
+          ↓
+3. AI根据规则从SQL注释中解析字段属性
+          ↓
+4. AI调用 generate_module 工具，传递解析后的参数
+          ↓
+5. 工具生成完整模块代码
+```
+
+### generate_module 工具（推荐）
+
+批量生成完整模块代码。AI需要先根据模板规则从SQL注释中解析字段属性。
+
+**参数说明：**
+
+| 参数 | 必填 | 说明 |
+|------|------|------|
+| group | 是 | 模板分组名称，如 `atom` |
+| basePackage | 是 | 基础包名（不包含模块名），如 `io.github.atom.ai.sales.module` |
+| moduleName | 是 | 模块名（小写），如 `project` |
+| className | 是 | 类名（大驼峰），如 `AiProject` |
+| tableName | 是 | 数据库表名，如 `ai_project` |
+| comment | 否 | 模块注释/描述 |
+| outputDir | 是 | Java代码输出目录 |
+| resourcesDir | 否 | 资源文件输出目录（用于XML等） |
+| fields | 是 | 字段列表（AI解析后的结构） |
+| author | 否 | 作者 |
+| date | 否 | 日期 |
+| version | 否 | 版本号 |
+| email | 否 | 邮箱后缀 |
+
+**字段结构（AI解析后）：**
+
+```json
+{
+  "columnName": "project_name",     // 数据库列名（下划线命名）
+  "fieldName": "projectName",       // Java字段名（驼峰命名）
+  "fieldType": "String",            // Java类型（基础类型或枚举类名）
+  "comment": "项目名称",             // 清理后的字段注释
+  "isPrimaryKey": false,            // 是否主键
+  "isQueryField": true,             // 是否查询字段
+  "ignore": false,                  // 是否忽略
+  "atomEnum": null,                 // Atom枚举定义（可选）
+  "dict": null                      // 字典引用（可选）
+}
+```
+
+**使用示例：**
+
+```json
+{
+  "group": "atom",
+  "basePackage": "io.github.atom.ai.sales.module",
+  "moduleName": "project",
+  "className": "AiProject",
+  "tableName": "ai_project",
+  "outputDir": "/path/to/project/src/main/java",
+  "fields": [
+    { "columnName": "id", "fieldName": "id", "fieldType": "Long", "comment": "主键id", "isPrimaryKey": true },
+    { "columnName": "project_name", "fieldName": "projectName", "fieldType": "String", "comment": "项目名称", "isQueryField": true },
+    {
+      "columnName": "project_type",
+      "fieldName": "projectType",
+      "fieldType": "ProjectType",
+      "comment": "项目类型",
+      "isQueryField": true,
+      "atomEnum": {
+        "name": "ProjectType",
+        "valueType": "Integer",
+        "values": [
+          { "code": "1", "desc": "硬件销售" },
+          { "code": "2", "desc": "综合项目" }
+        ]
+      }
+    }
+  ]
+}
+```
+
+**生成结果：**
+
+- Entity (PO)、DTO、Form、Query
+- Mapper 接口和 XML
+- Service 接口和实现
+- Controller
+- 枚举类（自动从atomEnum提取）
+
+### 字段解析规则说明
+
+AI需要从模板配置的 `fieldParsingGuide` 中读取规则，理解如何从SQL注释中提取字段属性。
+
+**类型映射：**
+
+| SQL类型 | Java类型 |
+|---------|----------|
+| bigint, bigint unsigned | Long |
+| varchar, char, text | String |
+| tinyint, int | Integer |
+| decimal | BigDecimal |
+| date | LocalDate |
+| datetime, timestamp | LocalDateTime |
+
+**注释标记规则：**
+
+| 标记 | 说明 | 输入示例 | 解析结果 |
+|------|------|----------|----------|
+| Q@ | 查询字段 | `Q@项目名称` | `isQueryField: true, comment: "项目名称"` |
+| 自定义枚举 | 枚举定义 | `自定义枚举:Integer:项目类型:1(1,"硬件销售");` | `atomEnum: {...}, fieldType: "ProjectType"` |
+| @dict | 字典引用 | `@dict(USER_STATUS)` | `dict: { code: "USER_STATUS" }` |
+| @ignore | 忽略字段 | `@ignore` | `ignore: true` |
 
 ## 示例模板
 
 `demo_template` 目录下提供了示例配置代码生成器，可供参考和学习：
+
+### MyBatis-Plus 模板
 
 ```
 demo_template/
@@ -91,14 +210,70 @@ demo_template/
     └── enum.java.vm           # 枚举类模板
 ```
 
+### Atom 框架模板
+
+```
+demo_template/
+└── atom/                      # Atom 框架代码生成模板
+    ├── template.json          # 模板配置文件
+    ├── entity.java.vm         # 实体类（PO）模板
+    ├── dto.java.vm            # 数据传输对象模板
+    ├── form.java.vm           # 表单对象模板
+    ├── query.java.vm          # 查询对象模板
+    ├── mapper.java.vm         # Mapper 接口模板
+    ├── mapper.xml.vm          # Mapper XML 模板
+    ├── service.java.vm        # 服务接口模板
+    ├── serviceImpl.java.vm    # 服务实现模板
+    ├── controller.java.vm     # 控制器模板
+    ├── converter.java.vm      # MapStruct 转换器模板
+    └── enum.java.vm           # 枚举类模板
+```
+
+#### Atom 框架特有规则
+
+Atom 框架模板支持以下特有规则：
+
+| 规则 | 语法 | 说明 |
+|------|------|------|
+| queryField | `Q@字段描述` | 标记字段为查询字段，将生成到 Query 类中 |
+| atomEnum | `自定义枚举:类型:枚举名:值列表;` | 解析 Atom 框架枚举定义 |
+
+**Atom 枚举规则示例：**
+
+SQL 注释格式：
+```sql
+project_type tinyint default 1 not null comment 'Q@自定义枚举:Integer:项目类型:1(1, "硬件销售"),2(2, "综合项目");'
+```
+
+解析结果：
+```json
+{
+  "comment": "项目类型",
+  "rules": {
+    "isQueryField": true,
+    "atomEnum": {
+      "valueType": "Integer",
+      "name": "ProjectType",
+      "values": [
+        { "code": "1", "desc": "硬件销售" },
+        { "code": "2", "desc": "综合项目" }
+      ]
+    }
+  }
+}
+```
+
 使用示例模板：
 
 ```bash
-# 复制示例模板到项目目录
+# 复制 MyBatis-Plus 示例模板到项目目录
 cp -r demo_template/mybatis-plus .code-generator/
 
+# 或复制 Atom 框架模板
+cp -r demo_template/atom .code-generator/
+
 # 或指定示例模板路径
-export CODE_GENERATOR_PATH=/path/to/demo_template/mybatis-plus
+export CODE_GENERATOR_PATH=/path/to/demo_template/atom
 ```
 
 ## Template.json 标准模板配置

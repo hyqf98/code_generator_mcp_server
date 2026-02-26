@@ -1,0 +1,66 @@
+package ${packageName};
+
+import ${entityPackage}.${className};
+import ${dtoPackage}.${className}DTO;
+import ${formPackage}.${className}Form;
+import ${queryPackage}.${className}Query;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.github.atom.extend.mybatis.service.IServiceX;
+
+import java.util.List;
+
+/**
+ * <p> ${comment}服务接口 </p>
+ *
+ * @author ${author}
+ * @version ${version}
+ * @email "mailto:${author}@${email}"
+ * @date ${date}
+ * @since ${version}
+ */
+public interface ${className}Service extends IServiceX<${className}> {
+
+    /**
+     * 根据条件查询全部数据
+     *
+     * @param query 查询参数
+     * @return 对象集合
+     * @since ${version}
+     */
+    List<${className}DTO> list(${className}Query query);
+
+    /**
+     * 根据 ID 获取详细信息
+     *
+     * @param id 主键
+     * @return 实体对象
+     * @since ${version}
+     */
+    ${className}DTO detail(Long id);
+
+    /**
+     * 分页查询
+     *
+     * @param query 查询参数
+     * @return 分页数据
+     * @since ${version}
+     */
+    IPage<${className}DTO> page(${className}Query query);
+
+    /**
+     * 新增数据
+     *
+     * @param form 参数实体
+     * @since ${version}
+     */
+    void create(${className}Form form);
+
+    /**
+     * 更新数据
+     *
+     * @param form 参数实体
+     * @since ${version}
+     */
+    void update(${className}Form form);
+
+}
