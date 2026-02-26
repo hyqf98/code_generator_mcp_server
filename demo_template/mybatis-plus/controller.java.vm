@@ -1,0 +1,96 @@
+package ${packageName};
+
+import ${entityPackage}.${className};
+import ${entityPackage}.req.${className}Req;
+import ${entityPackage}.form.${className}Form;
+import ${servicePackage}.${className}Service;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * ${comment}${className} 控制器
+ *
+ * @author ${author}
+ * @date ${date}
+ */
+@Tag(name = "${comment}", description = "${className}管理接口")
+@RestController
+@RequestMapping("${requestMapping}")
+@RequiredArgsConstructor
+public class ${className}Controller {
+
+    private final ${className}Service ${classNameLower}Service;
+
+    /**
+     * 分页查询
+     */
+    @Operation(summary = "分页查询")
+    @PostMapping("/page")
+    public R<Page<${className}>> queryPage(@RequestBody ${className}Req req) {
+        return R.ok(${classNameLower}Service.queryPage(req));
+    }
+
+    /**
+     * 列表查询
+     */
+    @Operation(summary = "列表查询")
+    @PostMapping("/list")
+    public R<List<${className}>> queryList(@RequestBody ${className}Req req) {
+        return R.ok(${classNameLower}Service.queryList(req));
+    }
+
+    /**
+     * 根据ID查询详情
+     */
+    @Operation(summary = "根据ID查询详情")
+    @GetMapping("/{id}")
+    public R<${className}> queryDetail(
+            @Parameter(description = "主键ID") @PathVariable Long id) {
+        return R.ok(${classNameLower}Service.queryDetail(id));
+    }
+
+    /**
+     * 新增
+     */
+    @Operation(summary = "新增")
+    @PostMapping
+    public R<Boolean> add(@Validated @RequestBody ${className}Form form) {
+        return R.ok(${classNameLower}Service.add(form));
+    }
+
+    /**
+     * 修改
+     */
+    @Operation(summary = "修改")
+    @PutMapping
+    public R<Boolean> update(@Validated @RequestBody ${className}Form form) {
+        return R.ok(${classNameLower}Service.update(form));
+    }
+
+    /**
+     * 删除
+     */
+    @Operation(summary = "删除")
+    @DeleteMapping("/{id}")
+    public R<Boolean> delete(
+            @Parameter(description = "主键ID") @PathVariable Long id) {
+        return R.ok(${classNameLower}Service.removeById(id));
+    }
+
+    /**
+     * 批量删除
+     */
+    @Operation(summary = "批量删除")
+    @DeleteMapping("/batch")
+    public R<Boolean> batchDelete(@RequestBody List<Long> ids) {
+        return R.ok(${classNameLower}Service.batchDelete(ids));
+    }
+
+}

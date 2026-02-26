@@ -1,0 +1,76 @@
+package ${packageName};
+
+import com.baomidou.mybatisplus.annotation.EnumValue;
+import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+/**
+ * ${comment}${enumName} 枚举
+ *
+ * @author ${author}
+ * @date ${date}
+ */
+@Getter
+@AllArgsConstructor
+public enum ${enumName} {
+
+#foreach($value in $values)
+    /**
+     * ${value.desc}
+     */
+    ${value.code.toUpperCase()}("${value.code}", "${value.desc}")#if($foreach.hasNext),#else;#end
+
+#end
+
+    ;
+
+    /**
+     * 编码
+     */
+    @EnumValue
+    @JsonValue
+    private final String code;
+
+    /**
+     * 描述
+     */
+    private final String desc;
+
+    /**
+     * 根据编码获取枚举
+     *
+     * @param code 编码
+     * @return 枚举值
+     */
+    public static ${enumName} getByCode(String code) {
+        if (code == null) {
+            return null;
+        }
+        for (${enumName} value : values()) {
+            if (value.getCode().equals(code)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 根据描述获取枚举
+     *
+     * @param desc 描述
+     * @return 枚举值
+     */
+    public static ${enumName} getByDesc(String desc) {
+        if (desc == null) {
+            return null;
+        }
+        for (${enumName} value : values()) {
+            if (value.getDesc().equals(desc)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+}

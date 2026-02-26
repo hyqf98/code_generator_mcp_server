@@ -1,0 +1,310 @@
+{
+  "name": "mybatis-plus",
+  "description": "MyBatis-Plus 代码生成模板集，支持生成 Entity、Mapper、Service、Controller 等完整代码",
+  "version": "1.0.0",
+  "author": "haijun",
+  "templates": [
+    {
+      "name": "entity",
+      "file": "entity.java.vm",
+      "type": "velocity",
+      "description": "生成 MyBatis-Plus 实体类，支持 @TableName、@TableId、@TableField 等注解",
+      "inputParams": [
+        { "name": "packageName", "type": "string", "required": true, "description": "包名，如 com.example.entity" },
+        { "name": "className", "type": "string", "required": true, "description": "实体类名" },
+        { "name": "tableName", "type": "string", "required": true, "description": "数据库表名" },
+        { "name": "comment", "type": "string", "required": false, "description": "类注释" },
+        { "name": "fields", "type": "array", "required": true, "description": "字段列表" },
+        { "name": "superClass", "type": "string", "required": false, "description": "父类，默认为 BaseEntity" },
+        { "name": "author", "type": "string", "required": false, "description": "作者", "defaultValue": "Code Generator" },
+        { "name": "date", "type": "string", "required": false, "description": "日期" }
+      ],
+      "output": {
+        "extension": ".java",
+        "namingRule": "PascalCase"
+      }
+    },
+    {
+      "name": "mapper",
+      "file": "mapper.java.vm",
+      "type": "velocity",
+      "description": "生成 MyBatis-Plus Mapper 接口，继承 BaseMapper",
+      "inputParams": [
+        { "name": "packageName", "type": "string", "required": true, "description": "包名" },
+        { "name": "className", "type": "string", "required": true, "description": "实体类名" },
+        { "name": "entityPackage", "type": "string", "required": false, "description": "实体类包名，默认同 packageName" },
+        { "name": "comment", "type": "string", "required": false, "description": "接口注释" },
+        { "name": "author", "type": "string", "required": false, "description": "作者" },
+        { "name": "date", "type": "string", "required": false, "description": "日期" }
+      ],
+      "output": {
+        "extension": ".java",
+        "suffix": "Mapper",
+        "namingRule": "PascalCase"
+      }
+    },
+    {
+      "name": "mapper-xml",
+      "file": "mapper.xml.vm",
+      "type": "velocity",
+      "description": "生成 MyBatis Mapper XML 文件",
+      "inputParams": [
+        { "name": "namespace", "type": "string", "required": true, "description": "命名空间，通常是 Mapper 接口全限定名" },
+        { "name": "tableName", "type": "string", "required": true, "description": "表名" },
+        { "name": "className", "type": "string", "required": true, "description": "实体类名" },
+        { "name": "fields", "type": "array", "required": true, "description": "字段列表" }
+      ],
+      "output": {
+        "extension": ".xml",
+        "suffix": "Mapper",
+        "namingRule": "PascalCase"
+      }
+    },
+    {
+      "name": "service",
+      "file": "service.java.vm",
+      "type": "velocity",
+      "description": "生成 Service 接口，继承 IService",
+      "inputParams": [
+        { "name": "packageName", "type": "string", "required": true, "description": "包名" },
+        { "name": "className", "type": "string", "required": true, "description": "实体类名" },
+        { "name": "entityPackage", "type": "string", "required": false, "description": "实体类包名" },
+        { "name": "mapperPackage", "type": "string", "required": false, "description": "Mapper 包名" },
+        { "name": "comment", "type": "string", "required": false, "description": "接口注释" },
+        { "name": "author", "type": "string", "required": false, "description": "作者" },
+        { "name": "date", "type": "string", "required": false, "description": "日期" }
+      ],
+      "output": {
+        "extension": ".java",
+        "suffix": "Service",
+        "namingRule": "PascalCase"
+      }
+    },
+    {
+      "name": "service-impl",
+      "file": "service-impl.java.vm",
+      "type": "velocity",
+      "description": "生成 Service 实现类，继承 ServiceImpl 并实现 Service 接口",
+      "inputParams": [
+        { "name": "packageName", "type": "string", "required": true, "description": "包名" },
+        { "name": "className", "type": "string", "required": true, "description": "实体类名" },
+        { "name": "entityPackage", "type": "string", "required": false, "description": "实体类包名" },
+        { "name": "mapperPackage", "type": "string", "required": false, "description": "Mapper 包名" },
+        { "name": "servicePackage", "type": "string", "required": false, "description": "Service 接口包名" },
+        { "name": "comment", "type": "string", "required": false, "description": "类注释" },
+        { "name": "author", "type": "string", "required": false, "description": "作者" },
+        { "name": "date", "type": "string", "required": false, "description": "日期" }
+      ],
+      "output": {
+        "extension": ".java",
+        "suffix": "ServiceImpl",
+        "namingRule": "PascalCase"
+      }
+    },
+    {
+      "name": "controller",
+      "file": "controller.java.vm",
+      "type": "velocity",
+      "description": "生成 RESTful Controller，包含增删改查接口",
+      "inputParams": [
+        { "name": "packageName", "type": "string", "required": true, "description": "包名" },
+        { "name": "className", "type": "string", "required": true, "description": "实体类名" },
+        { "name": "classNameLower", "type": "string", "required": false, "description": "实体类名首字母小写" },
+        { "name": "entityPackage", "type": "string", "required": false, "description": "实体类包名" },
+        { "name": "servicePackage", "type": "string", "required": false, "description": "Service 包名" },
+        { "name": "reqPackage", "type": "string", "required": false, "description": "请求对象包名" },
+        { "name": "requestMapping", "type": "string", "required": false, "description": "控制器请求路径" },
+        { "name": "comment", "type": "string", "required": false, "description": "类注释" },
+        { "name": "author", "type": "string", "required": false, "description": "作者" },
+        { "name": "date", "type": "string", "required": false, "description": "日期" }
+      ],
+      "output": {
+        "extension": ".java",
+        "suffix": "Controller",
+        "namingRule": "PascalCase"
+      }
+    },
+    {
+      "name": "req",
+      "file": "req.java.vm",
+      "type": "velocity",
+      "description": "生成查询请求对象，用于分页查询等场景",
+      "inputParams": [
+        { "name": "packageName", "type": "string", "required": true, "description": "包名" },
+        { "name": "className", "type": "string", "required": true, "description": "实体类名" },
+        { "name": "fields", "type": "array", "required": false, "description": "查询字段列表" },
+        { "name": "comment", "type": "string", "required": false, "description": "类注释" },
+        { "name": "author", "type": "string", "required": false, "description": "作者" },
+        { "name": "date", "type": "string", "required": false, "description": "日期" }
+      ],
+      "output": {
+        "extension": ".java",
+        "suffix": "Req",
+        "namingRule": "PascalCase"
+      }
+    },
+    {
+      "name": "form",
+      "file": "form.java.vm",
+      "type": "velocity",
+      "description": "生成表单对象，用于新增/修改操作",
+      "inputParams": [
+        { "name": "packageName", "type": "string", "required": true, "description": "包名" },
+        { "name": "className", "type": "string", "required": true, "description": "实体类名" },
+        { "name": "fields", "type": "array", "required": true, "description": "表单字段列表" },
+        { "name": "comment", "type": "string", "required": false, "description": "类注释" },
+        { "name": "author", "type": "string", "required": false, "description": "作者" },
+        { "name": "date", "type": "string", "required": false, "description": "日期" }
+      ],
+      "output": {
+        "extension": ".java",
+        "suffix": "Form",
+        "namingRule": "PascalCase"
+      }
+    },
+    {
+      "name": "enum",
+      "file": "enum.java.vm",
+      "type": "velocity",
+      "description": "生成枚举类",
+      "inputParams": [
+        { "name": "packageName", "type": "string", "required": true, "description": "包名" },
+        { "name": "enumName", "type": "string", "required": true, "description": "枚举名称" },
+        { "name": "comment", "type": "string", "required": false, "description": "枚举注释" },
+        { "name": "values", "type": "array", "required": true, "description": "枚举值列表" },
+        { "name": "author", "type": "string", "required": false, "description": "作者" },
+        { "name": "date", "type": "string", "required": false, "description": "日期" }
+      ],
+      "output": {
+        "extension": ".java",
+        "namingRule": "PascalCase"
+      }
+    }
+  ],
+  "rules": [
+    {
+      "name": "enum",
+      "pattern": "@enum\\(([\\w]+):([^)]+)\\)",
+      "description": "解析字段 comment 中的枚举定义，生成对应的枚举类",
+      "params": [
+        { "name": "enumName", "group": 1, "description": "枚举名称" },
+        { "name": "values", "group": 2, "separator": ",", "description": "枚举值列表" }
+      ],
+      "parse": {
+        "valueFormat": "{code}:{desc}",
+        "output": {
+          "name": "enumName",
+          "values": [
+            { "code": "valueCode", "desc": "valueDesc" }
+          ]
+        }
+      },
+      "examples": [
+        {
+          "input": "状态 @enum(STATUS:0:禁用,1:启用)",
+          "output": {
+            "comment": "状态",
+            "rules": {
+              "enum": {
+                "name": "STATUS",
+                "values": [
+                  { "code": "0", "desc": "禁用" },
+                  { "code": "1", "desc": "启用" }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "dict",
+      "pattern": "@dict\\(([\\w]+)\\)",
+      "description": "解析字典引用，关联系统字典",
+      "params": [
+        { "name": "dictCode", "group": 1, "description": "字典编码" }
+      ],
+      "parse": {
+        "output": {
+          "code": "dictCode"
+        }
+      },
+      "examples": [
+        {
+          "input": "类型 @dict(USER_TYPE)",
+          "output": {
+            "comment": "类型",
+            "rules": {
+              "dict": { "code": "USER_TYPE" }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "ignore",
+      "pattern": "@ignore",
+      "description": "标记字段忽略，不参与代码生成",
+      "params": [],
+      "parse": {
+        "output": { "ignore": true }
+      },
+      "examples": [
+        {
+          "input": "内部字段 @ignore",
+          "output": {
+            "comment": "内部字段",
+            "rules": { "ignore": true }
+          }
+        }
+      ]
+    },
+    {
+      "name": "pk",
+      "pattern": "@pk",
+      "description": "标记主键字段",
+      "params": [],
+      "parse": {
+        "output": { "isPrimaryKey": true }
+      },
+      "examples": [
+        {
+          "input": "主键ID @pk",
+          "output": {
+            "comment": "主键ID",
+            "rules": { "isPrimaryKey": true }
+          }
+        }
+      ]
+    },
+    {
+      "name": "logic",
+      "pattern": "@logic\\(([^:]+):([^)]+)\\)",
+      "description": "标记逻辑删除字段，指定未删除值和已删除值",
+      "params": [
+        { "name": "value", "group": 1, "description": "未删除值" },
+        { "name": "delval", "group": 2, "description": "已删除值" }
+      ],
+      "parse": {
+        "output": {
+          "logicDelete": true,
+          "value": "value",
+          "delval": "delval"
+        }
+      },
+      "examples": [
+        {
+          "input": "删除标记 @logic(0:1)",
+          "output": {
+            "comment": "删除标记",
+            "rules": {
+              "logicDelete": true,
+              "value": "0",
+              "delval": "1"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

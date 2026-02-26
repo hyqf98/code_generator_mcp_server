@@ -1,0 +1,123 @@
+package ${packageName};
+
+import ${entityPackage}.${className};
+import ${entityPackage}.req.${className}Req;
+import ${entityPackage}.form.${className}Form;
+import ${mapperPackage}.${className}Mapper;
+import ${servicePackage}.${className}Service;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * ${comment}${className} 服务实现类
+ *
+ * @author ${author}
+ * @date ${date}
+ */
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class ${className}ServiceImpl extends ServiceImpl<${className}Mapper, ${className}> implements ${className}Service {
+
+    @Override
+    public Page<${className}> queryPage(${className}Req req) {
+        Page<${className}> page = new Page<>(req.getPageNum(), req.getPageSize());
+        LambdaQueryWrapper<${className}> wrapper = buildQueryWrapper(req);
+        return this.page(page, wrapper);
+    }
+
+    @Override
+    public List<${className}> queryList(${className}Req req) {
+        LambdaQueryWrapper<${className}> wrapper = buildQueryWrapper(req);
+        return this.list(wrapper);
+    }
+
+    @Override
+    public ${className} queryDetail(Long id) {
+        if (Objects.isNull(id)) {
+            return null;
+        }
+        return this.getById(id);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean add(${className}Form form) {
+        ${className} entity = formToEntity(form);
+        return this.save(entity);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean update(${className}Form form) {
+        if (Objects.isNull(form.getId())) {
+            throw new IllegalArgumentException("ID不能为空");
+        }
+        ${className} entity = formToEntity(form);
+        return this.updateById(entity);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean batchDelete(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return false;
+        }
+        return this.removeByIds(ids);
+    }
+
+    /**
+     * 构建查询条件
+     */
+    private LambdaQueryWrapper<${className}> buildQueryWrapper(${className}Req req) {
+        LambdaQueryWrapper<${className}> wrapper = Wrappers.lambdaQuery();
+
+        if (Objects.nonNull(req)) {
+#foreach($field in $fields)
+#if($field.isQueryField)
+            // ${field.comment}
+#if($field.isStringField)
+            if (StringUtils.hasText(req.get${field.fieldNamePascal}())) {
+#if($field.isLikeQuery)
+                wrapper.like(${className}::get${field.fieldNamePascal}, req.get${field.fieldNamePascal}());
+#else
+                wrapper.eq(${className}::get${field.fieldNamePascal}, req.get${field.fieldNamePascal}());
+#end
+            }
+#else
+            if (Objects.nonNull(req.get${field.fieldNamePascal}())) {
+                wrapper.eq(${className}::get${field.fieldNamePascal}, req.get${field.fieldNamePascal}());
+            }
+#end
+#end
+#end
+        }
+
+        wrapper.orderByDesc(${className}::getId);
+        return wrapper;
+    }
+
+    /**
+     * 表单转实体
+     */
+    private ${className} formToEntity(${className}Form form) {
+        ${className} entity = new ${className}());
+#foreach($field in $fields)
+#if(!$field.rules.ignore && !$field.isAutoFill)
+        entity.set${field.fieldNamePascal}(form.get${field.fieldNamePascal}());
+#end
+#end
+        return entity;
+    }
+
+}

@@ -1,0 +1,45 @@
+package ${packageName};
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+#if($hasDateField)
+import java.time.LocalDateTime;
+#end
+#if($hasBigDecimalField)
+import java.math.BigDecimal;
+#end
+import jakarta.validation.constraints.*;
+import java.io.Serializable;
+
+/**
+ * ${comment}${className} 表单对象
+ *
+ * @author ${author}
+ * @date ${date}
+ */
+@Data
+@Schema(description = "${comment}表单")
+public class ${className}Form implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+#foreach($field in $fields)
+#if(!$field.rules.ignore && !$field.isAutoFill)
+    /**
+     * ${field.comment}
+     */
+#if($field.rules.isPrimaryKey)
+    @Schema(description = "${field.comment}")
+    private ${field.fieldType} ${field.fieldName};
+#elseif($field.required)
+    @Schema(description = "${field.comment}", required = true)
+    @NotBlank(message = "${field.comment}不能为空")
+    private ${field.fieldType} ${field.fieldName};
+#else
+    @Schema(description = "${field.comment}")
+    private ${field.fieldType} ${field.fieldName};
+#end
+
+#end
+#end
+}

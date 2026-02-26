@@ -1,0 +1,28 @@
+package ${packageName};
+
+import ${entityPackage}.${className};
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * ${comment}${className} Mapper 接口
+ *
+ * @author ${author}
+ * @date ${date}
+ */
+@Mapper
+public interface ${className}Mapper extends BaseMapper<${className}> {
+
+    /**
+     * 自定义分页查询
+     *
+     * @param params 查询参数
+     * @return 结果列表
+     */
+    List<Map<String, Object>> selectCustomPage(@Param("params") Map<String, Object> params);
+
+}

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${namespace}">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="${entityPackage}.${className}">
+#foreach($field in $fields)
+#if(!$field.rules.ignore)
+#if($field.isPrimaryKey)
+        <id column="${field.columnName}" property="${field.fieldName}"/>
+#else
+        <result column="${field.columnName}" property="${field.fieldName}"/>
+#end
+#end
+#end
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+#set($columnList = [])
+#foreach($field in $fields)
+#if(!$field.rules.ignore)
+#set($added = $columnList.add("        ${field.columnName}"))
+#end
+#end
+${columnList.toString().replace("[", "").replace("]", "")}
+    </sql>
+
+    <!-- 自定义分页查询 -->
+    <select id="selectCustomPage" resultType="java.util.Map">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM ${tableName}
+        <where>
+            <if test="params.keyword != null and params.keyword != ''">
+                AND (
+#set($likeFields = [])
+#foreach($field in $fields)
+#if($field.isLikeQuery)
+#set($added = $likeFields.add("                    ${field.columnName} LIKE CONCAT('%', #{params.keyword}, '%')"))
+#end
+#end
+${likeFields.toString().replace("[", "").replace("]", "").replace(", ", " OR\n")}
+                )
+            </if>
+#foreach($field in $fields)
+#if($field.isQueryField)
+            <if test="params.${field.fieldName} != null#if($field.isStringField) and params.${field.fieldName} != ''#end">
+                AND ${field.columnName} = #{params.${field.fieldName}}
+            </if>
+#end
+#end
+        </where>
+        ORDER BY #if($hasCreateTime)create_time#else}id#end DESC
+    </select>
+
+</mapper>

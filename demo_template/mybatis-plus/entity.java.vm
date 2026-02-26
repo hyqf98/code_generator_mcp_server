@@ -1,0 +1,46 @@
+package ${packageName};
+
+import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import lombok.Data;
+#if($superClass)
+import ${superClassPackage};
+#end
+#if($hasDateField)
+import java.time.LocalDateTime;
+#end
+#if($hasBigDecimalField)
+import java.math.BigDecimal;
+#end
+import java.io.Serializable;
+
+/**
+ * ${comment}${className} 实体类
+ *
+ * @author ${author}
+ * @date ${date}
+ */
+@Data
+@TableName(value = "${tableName}"#if($autoResultMap), autoResultMap = true#end)
+public class ${className} implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+#foreach($field in $fields)
+#if(!$field.rules.ignore)
+    /**
+     * ${field.comment}
+     */
+#if($field.rules.isPrimaryKey)
+    @TableId(value = "${field.columnName}"#if($field.idType), type = IdType.${field.idType}#end)
+#elseif($field.rules.logicDelete)
+    @TableLogic(value = "${field.rules.value}", delval = "${field.rules.delval}")
+    @TableField(value = "${field.columnName}"#if($field.fill), fill = FieldFill.${field.fill}#end)
+#else
+    @TableField(value = "${field.columnName}"#if($field.fill), fill = FieldFill.${field.fill}#end#if($field.notNull), updateStrategy = FieldStrategy.NOT_NULL#end#if($field.typeHandler), typeHandler = ${field.typeHandler}.class#end)
+#end
+    private ${field.fieldType} ${field.fieldName};
+
+#end
+#end
+}

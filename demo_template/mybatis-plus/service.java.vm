@@ -1,0 +1,67 @@
+package ${packageName};
+
+import ${entityPackage}.${className};
+import ${entityPackage}.req.${className}Req;
+import ${entityPackage}.form.${className}Form;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
+
+/**
+ * ${comment}${className} 服务接口
+ *
+ * @author ${author}
+ * @date ${date}
+ */
+public interface ${className}Service extends IService<${className}> {
+
+    /**
+     * 分页查询
+     *
+     * @param req 查询条件
+     * @return 分页结果
+     */
+    Page<${className}> queryPage(${className}Req req);
+
+    /**
+     * 根据条件查询列表
+     *
+     * @param req 查询条件
+     * @return 列表结果
+     */
+    List<${className}> queryList(${className}Req req);
+
+    /**
+     * 根据ID查询详情
+     *
+     * @param id 主键ID
+     * @return 实体详情
+     */
+    ${className} queryDetail(Long id);
+
+    /**
+     * 新增
+     *
+     * @param form 表单数据
+     * @return 是否成功
+     */
+    boolean add(${className}Form form);
+
+    /**
+     * 修改
+     *
+     * @param form 表单数据
+     * @return 是否成功
+     */
+    boolean update(${className}Form form);
+
+    /**
+     * 批量删除
+     *
+     * @param ids ID列表
+     * @return 是否成功
+     */
+    boolean batchDelete(List<Long> ids);
+
+}
