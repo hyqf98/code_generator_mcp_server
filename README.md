@@ -10,22 +10,24 @@
 
 ```bash
 # 基本配置（使用当前项目内的 .code-generator 目录）
-claude mcp add code-generator -- npx @haijun/code-generator-mcp-server@latest
+claude mcp add code-generator --scope user -- npx @hyqf98/code_generator_mcp_server@latest
 
 # 指定模板路径（使用环境变量）
-claude mcp add code-generator -e CODE_GENERATOR_PATH=/path/to/templates -- npx @haijun/code-generator-mcp-server@latest
+claude mcp add code-generator --scope user -e CODE_GENERATOR_PATH=/path/to/templates -- npx @hyqf98/code_generator_mcp_server@latest
 ```
+
+> **说明**: `--scope user` 将 MCP 配置到用户全局环境（`~/.claude/settings.json`），所有项目均可使用。
 
 ### 方式二：手动配置
 
-编辑 Claude Code 配置文件 `~/.claude/settings.json`：
+编辑 Claude Code 用户配置文件 `~/.claude/settings.json`：
 
 ```json
 {
   "mcpServers": {
     "code-generator": {
       "command": "npx",
-      "args": ["@haijun/code-generator-mcp-server@latest"],
+      "args": ["@hyqf98/code_generator_mcp_server@latest"],
       "env": {
         "CODE_GENERATOR_PATH": "/path/to/templates"
       }

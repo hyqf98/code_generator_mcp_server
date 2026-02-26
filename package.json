@@ -1,5 +1,5 @@
 {
-  "name": "@haijun/code-generator-mcp-server",
+  "name": "@hyqf98/code_generator_mcp_server",
   "version": "1.0.0",
   "description": "基于模板的代码生成器 MCP 服务，支持自定义规则解析",
   "type": "module",
